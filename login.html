@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ElectroHUB</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 400px;
+        }
+
+        div {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .forgot-password {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .forgot-password a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: green;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="loginForm">
+        <div>
+            <label for="Username">Username</label>
+            <input id="Username" name="username" type="text" placeholder="Enter Name" required>
+        </div>
+
+        <div>
+            <label for="Password">Password</label>
+            <input id="Password" name="password" type="password" placeholder="Enter Password" required>
+        </div>
+
+        <div class="forgot-password">
+            <a href="forgot.html">Forgot Password?</a>
+        </div>
+
+        <button type="submit">Login</button>
+        <div id="message"></div>
+    </form>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const message = document.getElementById('message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.text();
+                message.textContent = result;
+                message.style.color = result.includes('successful') ? 'green' : 'red';
+            } catch (error) {
+                message.textContent = 'Something went wrong. Please try again.';
+                message.style.color = 'red';
+            }
+        });
+    </script>
+
+</body>
+</html>

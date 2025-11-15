@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - ElectroHUB</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 flex items-center justify-center min-h-screen px-4">
+
+  <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-blue-100">
+    <h2 class="text-3xl font-bold text-blue-600 mb-6 text-center">Create Your Account</h2>
+    
+    <form id="signupForm" action="javascript:void(0)">
+      <label class="block mb-2 text-sm font-medium">Username</label>
+      <input id="username" name="username" type="text" class="w-full px-4 py-2 mb-4 rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+
+      <label class="block mb-2 text-sm font-medium">Email</label>
+      <input id="email" name="email" type="email" class="w-full px-4 py-2 mb-4 rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+
+      <label class="block mb-2 text-sm font-medium">Password</label>
+      <input id="password" name="password" type="password" class="w-full px-4 py-2 mb-6 rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+
+      <label class="block mb-2 text-sm font-medium">Mobile Number</label>
+      <input id="mobile" name="mobile" type="text" class="w-full px-4 py-2 mb-6 rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition">
+        Sign Up
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-500">
+      Already have an account?
+      <a href="signin.html" class="text-blue-600 hover:underline font-medium">Login</a>
+    </p>
+  </div>
+
+  <script>
+    // Handle form submission
+    document.getElementById('signupForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const mobile = document.getElementById('mobile').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, email, password, mobile }),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          alert('Signup failed: ' + error);
+          return;
+        }
+
+        // Show success message and redirect to login page
+        alert('User registered successfully!');
+        window.location.href = '/signin.html'; // Redirect to login page after successful signup
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

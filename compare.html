@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compare Devices - ElectroHUB</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <header class="bg-white shadow p-6 flex justify-between items-center sticky top-0 z-50">
+    <h1 class="text-2xl font-bold text-blue-600">ElectroHUB</h1>
+    <nav class="space-x-6">
+      <a href="home.html" class="text-gray-600 hover:text-blue-600">Home</a>
+      <a href="categories.html" class="text-gray-600 hover:text-blue-600">Categories</a>
+      <a href="contact.html" class="text-gray-600 hover:text-blue-600">Contact</a>
+      <a href="signup.html" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Sign Up</a>
+    </nav>
+  </header>
+
+  <main class="py-16 px-6 md:px-20">
+    <h2 class="text-3xl font-bold text-center text-blue-600 mb-10">Compare Devices</h2>
+    <div class="max-w-6xl mx-auto bg-white shadow-md p-6 rounded-lg">
+      <form id="compareForm" class="space-y-6">
+        <div class="flex flex-wrap items-center gap-6 mb-4">
+          <div>
+            <label class="block font-medium mb-1">Device Type</label>
+            <select id="deviceType" class="border border-gray-300 rounded-md px-4 py-2">
+              <option value="smartphones">Smartphones</option>
+              <option value="laptops">Laptops</option>
+              <option value="tablets">Tablets</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Devices to Compare</label>
+            <select id="compareCount" class="border border-gray-300 rounded-md px-4 py-2">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+        </div>
+        <div id="selectorInputs" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4"></div>
+        <div class="text-center">
+          <button type="button" onclick="compareDevices()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">Compare</button>
+        </div>
+      </form>
+      <div id="comparisonResult" class="mt-10 overflow-x-auto hidden"></div>
+    </div>
+  </main>
+  <footer class="py-6 text-center text-gray-500 text-sm bg-white border-t mt-10">
+    © 2025 ElectroHUB. Built with 🔌 and 💙 for tech enthusiasts.
+  </footer>
+  <script>
+    // Sample data for 3 categories.
+    const DATA = {
+      smartphones: {
+        features: ['image','price', 'display', 'processor', 'ram', 'storage', 'battery', 'os', 'mainCamera', 'frontCamera', 'refreshRate', 'build', 'weight', 'waterResistance', 'wirelessCharging'],
+        niceFeatures: ['battery', 'mainCamera', 'ram', 'price'],
+        devices: {
+          'galaxy-s24': {name: 'Galaxy S24', image:'https://th.bing.com/th/id/OIP.u3EdJnbjmUg566wo1BKe6wHaHa?rs=1&pid=ImgDetMain', display: '6.8" QHD+ AMOLED', processor: 'Snapdragon 8 Gen 3', ram: '12 GB', storage: '256 GB', battery: '5000 mAh', os: 'Android 14', mainCamera: '200 MP', frontCamera: '12 MP', refreshRate: '120 Hz', build: 'Aluminum + Gorilla Glass Victus', weight: '196 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 89999},
+          'galaxy-s23-ultra': {name:'Galaxy S23 Ultra', image:'https://images.samsung.com/is/image/samsung/p6pim/in/sm-s918bzadinu/gallery/in-galaxy-s23-s918-sm-s918bzadinu-thumb-535724359', display:'6.8" Edge QHD+ AMOLED', processor:'Snapdragon 8 Gen 2', ram:'12 GB', storage:'256 GB', battery:'5000 mAh', os:'Android 13', mainCamera:'200 MP', frontCamera:'12 MP', refreshRate:'120 Hz', build:'Aluminum + Gorilla Glass', weight:'234 g', waterResistance:'IP68', wirelessCharging:'Yes', price: 104999},
+          'iphone-15-pro-max': {name: 'iPhone 15 Pro Max', image: 'https://m.media-amazon.com/images/I/81q5vSM2YKL._AC_SL1500_.jpg', display: '6.7" Super Retina XDR', processor: 'Apple A17 Pro', ram: '8 GB', storage: '256 GB', battery: '4422 mAh', os: 'iOS 17', mainCamera: '48 MP + 12 MP + 12 MP', frontCamera: '12 MP', refreshRate: '120 Hz', build: 'Titanium + Ceramic Shield', weight: '221 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 159900},
+          'iphone-15': {name: 'iPhone 15', image: 'https://m.media-amazon.com/images/I/81fxjeu8fdL._AC_SL1500_.jpg', display: '6.1" Super Retina XDR', processor: 'Apple A17 Pro', ram: '6 GB', storage: '128 GB', battery: '3349 mAh', os: 'iOS 17', mainCamera: '48 MP', frontCamera: '12 MP', refreshRate: '120 Hz', build: 'Aluminum + Ceramic Shield', weight: '171 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 79900},
+          'pixel-8': {name: 'Pixel 8', image: 'https://th.bing.com/th/id/OIP.lztOFMYOa2JPMvSHm2JB8QHaHa?rs=1&pid=ImgDetMain', display: '6.2" Actua OLED', processor: 'Google Tensor G3', ram: '8 GB', storage: '128 GB', battery: '4575 mAh', os: 'Android 14', mainCamera: '50 MP', frontCamera: '10.5 MP', refreshRate: '120 Hz', build: 'Aluminum + Gorilla Glass Victus', weight: '187 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 75999},
+          'pixel-8-pro': {name: 'Pixel 8 Pro', image: 'https://m.media-amazon.com/images/I/61pL1B5s-RL._AC_SL1500_.jpg', display: '6.7" LTPO OLED', processor: 'Google Tensor G3', ram: '12 GB', storage: '256 GB', battery: '5050 mAh', os: 'Android 14', mainCamera: '50 MP + 48 MP + 48 MP', frontCamera: '10.5 MP', refreshRate: '120 Hz', build: 'Aluminum + Gorilla Glass Victus', weight: '213 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 99999},
+          'oneplus-12': {name: 'OnePlus 12', image: 'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-12-1.jpg', display: '6.82" AMOLED QHD+', processor: 'Snapdragon 8 Gen 3', ram: '16 GB', storage: '512 GB', battery: '5400 mAh', os: 'Android 14 (OxygenOS)', mainCamera: '50 MP + 64 MP Telephoto', frontCamera: '32 MP', refreshRate: '120 Hz', build: 'Aluminum + Gorilla Glass Victus 2', weight: '220 g', waterResistance: 'IP65', wirelessCharging: 'Yes', price: 69999},
+          'xiaomi-14-pro': {name: 'Xiaomi 14 Pro', image: 'https://i01.appmifile.com/webfile/globalimg/032/B229CD42-E6A7-676E-1C33-8ADF474DE5A0.jpg', display: '6.73" LTPO AMOLED', processor: 'Snapdragon 8 Gen 3', ram: '12 GB', storage: '256 GB', battery: '4880 mAh', os: 'Android 14', mainCamera: '50 MP + 50 MP + 50 MP', frontCamera: '32 MP', refreshRate: '120 Hz', build: 'Aluminum + Glass', weight: '223 g', waterResistance: 'IP68', wirelessCharging: 'Yes', price: 85000},
+          'asus-zenfone-10': {name:'ASUS Zenfone 10', image:'https://www.asus.com/media/global/gallery/tVp1PguajMpJMf6U_setting_xxx_0_90_end_2000.png', display:'5.9" AMOLED', processor:'Snapdragon 8 Gen 2', ram:'16 GB', storage:'512 GB', battery:'4300 mAh', os:'Android 13', mainCamera:'50 MP + 13 MP', frontCamera:'32 MP', refreshRate:'144 Hz', build:'Aluminum + Glass', weight:'172 g', waterResistance:'IP68', wirelessCharging:'Yes', price: 67999},
+          'nothing-phone-2': {name:'Nothing Phone (2)', image:'https://cdn.shopify.com/s/files/1/0591/3365/3523/products/NothingPhone2-Black_600x.jpg', display:'6.7" LTPO OLED', processor:'Snapdragon 8+ Gen 1', ram:'12 GB', storage:'256 GB', battery:'4700 mAh', os:'Android 13', mainCamera:'50 MP + 50 MP', frontCamera:'32 MP', refreshRate:'120 Hz', build:'Aluminum + Glass', weight:'201 g', waterResistance:'IP54', wirelessCharging:'Yes', price: 44999}
+        }
+      },
+      laptops: {
+        features: ['image','price','display','processor','ram','storage','gpu','battery','os','weight','build'],
+        niceFeatures: ['battery','ram','storage','price'],
+        devices: {
+          'macbook-air-m2': {name:'MacBook Air M2', image:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mb-air-spacegray-select-202206?wid=904&hei=840&fmt=jpeg&qlt=80&.v=1653493200207', display:'13.6" Liquid Retina', processor:'Apple M2', ram:'8 GB', storage:'256 GB SSD', gpu:'8-Core', battery:'18 hr', os:'macOS Sonoma', weight:'1.24 kg', build:'Aluminum', price: 114900},
+          'macbook-pro-m3': {name:'MacBook Pro 14 (M3)', image:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-silver-select-202310?wid=904&hei=840&fmt=jpeg&qlt=80&.v=1697316524386', display:'14.2" Liquid Retina XDR', processor:'Apple M3', ram:'18 GB', storage:'512 GB SSD', gpu:'10-Core', battery:'18 hr', os:'macOS Sonoma', weight:'1.60 kg', build:'Aluminum', price: 179900},
+          'dell-xps-13': {name:'Dell XPS 13', image:'https://i.dell.com/sites/csimages/Master_Imagery/all/xps-laptop-13-9310-campaign-hero-504x350-ng.psd', display:'13.4" FHD+', processor:'Intel i7-1250U', ram:'16 GB', storage:'512 GB SSD', gpu:'Iris Xe', battery:'14 hr', os:'Windows 11', weight:'1.2 kg', build:'Aluminum + Carbon fiber', price: 98000},
+          'dell-inspiron-15': {name:'Dell Inspiron 15', image:'https://snpi.dell.com/snp/images/products/large/en-in~70165177/70165177.jpg', display:'15.6" FHD', processor:'Intel i5-1235U', ram:'16 GB', storage:'512 GB SSD', gpu:'Iris Xe', battery:'7 hr', os:'Windows 11', weight:'1.65 kg', build:'Aluminum + Plastic', price: 69900},
+          'hp-spectre-x360': {name:'HP Spectre x360', image:'https://ssl-product-images.www8-hp.com/digmedialib/prodimg/lowres/c06087629.png', display:'13.5" UHD OLED', processor:'Intel i7-1255U', ram:'16 GB', storage:'1 TB SSD', gpu:'Iris Xe', battery:'15 hr', os:'Windows 11', weight:'1.34 kg', build:'Aluminum', price: 130000},
+          'hp-omen-16': {name:'HP Omen 16', image:'https://ssl-product-images.www8-hp.com/digmedialib/prodimg/lowres/c08199638.png', display:'16.1" QHD 165Hz', processor:'Intel i7-13700HX', ram:'16 GB', storage:'1 TB SSD', gpu:'RTX 4070 8GB', battery:'8 hr', os:'Windows 11', weight:'2.35 kg', build:'Aluminum + Plastic', price: 148000},
+          'asus-rog-zephyrus-g14': {name:'ASUS ROG Zephyrus G14', image:'https://dlcdnwebimgs.asus.com/gain/5b8e3c593fc14c14b93bbb3e4d1948b5/', display:'14" QHD 120Hz', processor:'AMD Ryzen 9 6900HS', ram:'32 GB', storage:'1 TB SSD', gpu:'Radeon RX 6800S', battery:'10 hr', os:'Windows 11', weight:'1.72 kg', build:'Magnesium alloy', price: 145000},
+          'asus-vivobook-15': {name:'ASUS VivoBook 15', image:'https://dlcdnwebimgs.asus.com/gain/129B6F6D-1D48-497E-9E40-F437618AC7B6/w800', display:'15.6" FHD', processor:'Intel i5-1135G7', ram:'8 GB', storage:'512 GB SSD', gpu:'Iris Xe', battery:'6 hr', os:'Windows 11', weight:'1.8 kg', build:'Plastic', price: 49999},
+          'lenovo-yoga-7i': {name:'Lenovo Yoga 7i', image:'https://www.lenovo.com/medias/lenovo-laptop-yoga-7i-14-gen-7-front.png?context=bWFzdGVyfHJvb3R8NzI0NTB8aW1hZ2UvcG5nfGgxYS9oMTUvMTA0MDkxMzAyNDMzMTAucG5nfDQ4ZmM3ODA2MzJlNGFmMzQyYjI3ZWI3MDUzNzk2ZmYzMmE2NGYwZjhlYzYxZGVhNzAyODZmNmY4ZDhjYWJmNjg', display:'14" IPS Touch', processor:'Intel i7-1260P', ram:'16 GB', storage:'1 TB SSD', gpu:'Iris Xe', battery:'12 hr', os:'Windows 11', weight:'1.43 kg', build:'Aluminum', price: 90000}
+        }
+      },
+      tablets: {
+        features: ['image','price','display','processor','ram','storage','battery','os','mainCamera','frontCamera','build','weight'],
+        niceFeatures: ['battery','ram','price'],
+        devices: {
+          'ipad-pro-2022': {name:'iPad Pro (2022)', image:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/ipad-pro-12-11-select-202210?wid=940&hei=1112&fmt=png-alpha&.v=1664411206992', display:'12.9" Liquid Retina XDR', processor:'Apple M2', ram:'8 GB', storage:'128 GB', battery:'10 hr', os:'iPadOS 16', mainCamera:'12 MP + 10 MP', frontCamera:'12 MP', build:'Aluminum', weight:'682 g', price: 110000},
+          'ipad-air-2024': {name:'iPad Air (2024)', image:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/ipad-air-select-wifi-blue-202407?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1712877094565', display:'11" Liquid Retina', processor:'Apple M2', ram:'8 GB', storage:'128 GB', battery:'10 hr', os:'iPadOS 17', mainCamera:'12 MP', frontCamera:'12 MP', build:'Aluminum', weight:'462 g', price: 69900},
+          'samsung-galaxy-tab-s9': {name:'Galaxy Tab S9', image:'https://images.samsung.com/in/tablets/galaxy-tabs9/buy/Tablet-01-Gray-1600x1200.jpg', display:'11" Dynamic AMOLED 2X', processor:'Snapdragon 8 Gen 2', ram:'12 GB', storage:'256 GB', battery:'8400 mAh', os:'Android 13', mainCamera:'13 MP', frontCamera:'12 MP', build:'Aluminum', weight:'498 g', price: 85000},
+          'samsung-galaxy-tab-a9': {name:'Galaxy Tab A9', image:'https://images.samsung.com/is/image/samsung/p6pim/in/sm-x110nzaeinu/gallery/in-galaxy-tab-a9-sm-x110nzaeinu-thumb-539820126', display:'8.7" LCD', processor:'MediaTek Helio G99', ram:'4 GB', storage:'64 GB', battery:'5100 mAh', os:'Android 13', mainCamera:'8 MP', frontCamera:'2 MP', build:'Aluminum', weight:'332 g', price: 12999},
+          'oneplus-pad': {name:'OnePlus Pad', image:'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-pad-1.jpg', display:'11.61" IPS LCD', processor:'Dimensity 9000', ram:'12 GB', storage:'256 GB', battery:'9510 mAh', os:'Android 13', mainCamera:'13 MP', frontCamera:'8 MP', build:'Aluminum', weight:'552 g', price: 39000},
+          'realme-pad-2': {name:'Realme Pad 2', image:'https://fdn2.gsmarena.com/vv/pics/realme/realme-pad2-1.jpg', display:'11.5" IPS LCD 120Hz', processor:'Helio G99', ram:'8 GB', storage:'256 GB', battery:'8360 mAh', os:'Android 13', mainCamera:'8 MP', frontCamera:'8 MP', build:'Aluminum', weight:'518 g', price: 19999},
+          'xiaomi-pad-6': {name:'Xiaomi Pad 6', image:'https://i01.appmifile.com/webfile/globalimg/products/pc/xiaomi-pad-6/specs_header.png', display:'11" IPS LCD 144Hz', processor:'Snapdragon 870', ram:'8 GB', storage:'256 GB', battery:'8840 mAh', os:'Android 13', mainCamera:'13 MP', frontCamera:'8 MP', build:'Aluminum', weight:'490 g', price: 27999},
+          'lenovo-tab-p12': {name: 'Lenovo Tab P12', image: 'https://p2-ofp.static.pub/medias/25646649267_Lenovo_Tablet_Tab_P12_Pro_05.png', display: '12.6" AMOLED', processor: 'Snapdragon 870', ram: '8 GB', storage: '256 GB', battery: '10200 mAh', os: 'Android 12', mainCamera: '13 MP', frontCamera: '8 MP', build: 'Aluminum', weight: '565 g', price: 49999}
+        }
+      },
+    };
+
+    let currentType = 'smartphones';
+    let currentCount = 2;
+    const form = document.getElementById('compareForm');
+    const deviceTypeSelect = document.getElementById('deviceType');
+    const countSelect = document.getElementById('compareCount');
+    const selectorInputs = document.getElementById('selectorInputs');
+
+    function getDevicesAndIDs() {
+      return Object.entries(DATA[currentType].devices);
+    }
+
+    function makeSelector(i) {
+      const id = `device${i + 1}`;
+      const list = getDevicesAndIDs();
+      const label = `${DATA[currentType].devices[list[i % list.length][0]].name.split(' ')[0] || 'Device'} ${i + 1}`;
+      let html = `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-2">${label}</label>`;
+      html += `<select id="${id}" class="w-full border border-gray-300 rounded-md p-2">`;
+      list.forEach(([key, d]) => {
+        html += `<option value="${key}">${d.name}</option>`;
+      });
+      html += '</select></div>';
+      return html;
+    }
+
+    function updateSelectors() {
+      selectorInputs.innerHTML = '';
+      for (let i = 0; i < currentCount; i++) {
+        selectorInputs.innerHTML += makeSelector(i);
+      }
+    }
+
+    deviceTypeSelect.addEventListener('change', (e) => {
+      currentType = e.target.value;
+      updateSelectors();
+      document.getElementById('comparisonResult').classList.add('hidden');
+    });
+    countSelect.addEventListener('change', (e) => {
+      currentCount = Number(e.target.value);
+      updateSelectors();
+      document.getElementById('comparisonResult').classList.add('hidden');
+    });
+    updateSelectors();
+
+    function parseValue(val, feature) {
+      if (typeof val === 'number') return val;
+      if (typeof val !== 'string') return 0;
+      // for GB/MP/mAh/kg/g/hr values
+      let n = parseFloat(val.replace(/[^0-9.]/g, ''));
+      if(/price/i.test(feature)) n = parseInt(val.toString().replace(/[^\d]/g, ''));
+      if(feature.includes('ram')||feature.includes('storage')) return n||0;
+      if(feature.includes('battery')) return n||0;
+      if(feature.includes('weight')) return n||0;
+      if(feature.includes('camera')) return n||0;
+      return n||val;
+    }
+
+    function compareDevices() {
+      const selected = [];
+      for(let i = 0; i < currentCount; i++) {
+        const val = document.getElementById(`device${i+1}`).value;
+        selected.push(val);
+      }
+      if (new Set(selected).size !== selected.length) {
+        alert('Please select different devices for comparison.');
+        return;
+      }
+      const devices = DATA[currentType].devices;
+      const features = DATA[currentType].features;
+      const niceFeatures = DATA[currentType].niceFeatures;
+
+      // highlight rules per feature: for price, min is nice; for others, max
+      const highlight = (feature, values) => {
+        if(feature === 'price') {
+          let min = Math.min(...values.map(v => parseValue(v, feature)));
+          return values.map(v => parseValue(v, feature) === min);
+        } else {
+          let max = Math.max(...values.map(v => parseValue(v, feature)));
+          return values.map(v => parseValue(v, feature) === max);
+        }
+      };
+
+      let table = `<table class='min-w-full border border-gray-200 text-sm md:text-base text-center'><thead><tr class='bg-blue-100'><th class='p-3 text-left'>Feature</th>`;
+      selected.forEach(k => table += `<th class='p-3'>${devices[k].name}</th>`);
+      table += `</tr></thead><tbody class='bg-white divide-y divide-gray-200'>`;
+      for (let feature of features) {
+        const label = feature === 'image' ? ' ' : feature.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+        table += `<tr><td class='p-3 font-medium'>${label}</td>`;
+        // get current row's values
+        const featureValues = selected.map(k => devices[k][feature]);
+        let marked = Array(selected.length).fill(false);
+        if(niceFeatures.includes(feature)) {
+          marked = highlight(feature, featureValues);
+        }
+        selected.forEach((k, j) => {
+          if (feature === 'image') {
+            table += `<td class='p-3'><img src="${devices[k][feature]}" alt="${devices[k].name}" class="h-32 mx-auto object-contain"></td>`;
+          } else {
+            table += `<td class='p-3 ${marked[j] ? 'bg-green-100 font-bold text-green-900 rounded' : ''}'>${devices[k][feature]}</td>`;
+          }
+        });
+        table += `</tr>`;
+      }
+      table += `</tbody></table>`;
+      document.getElementById('comparisonResult').innerHTML = table;
+      document.getElementById('comparisonResult').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
